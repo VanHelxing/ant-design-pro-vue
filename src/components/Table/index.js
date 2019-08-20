@@ -155,9 +155,25 @@ export default {
       // eslint-disable-next-line
       if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
         result.then(r => {
+          var currentPageNum
+          var currentPageSize
+
+          if (r.page === undefined) {
+            currentPageNum = r.pageNo
+          } else {
+            currentPageNum = Number.parseInt(r.page)
+          }
+
+          if (r.totalElements === undefined) {
+            currentPageSize = r.totalCount
+          } else {
+            currentPageSize = Number.parseInt(r.totalElements)
+          }
+
           this.localPagination = this.showPagination && Object.assign({}, this.localPagination, {
-            current: r.pageNo, // 返回结果中的当前分页数
-            total: r.totalCount, // 返回结果中的总记录数
+
+            current: currentPageNum, // 返回结果中的当前分页数
+            total: currentPageSize, // 返回结果中的总记录数
             showSizeChanger: this.showSizeChanger,
             pageSize: (pagination && pagination.pageSize) ||
               this.localPagination.pageSize

@@ -40,6 +40,23 @@ export const asyncRouterMap = [
         ]
       },
 
+      // 铁路局基础档案
+      {
+        path: '/railway',
+        name: 'railway',
+        redirect: '/railway/base',
+        component: PageView,
+        meta: { title: '基础档案', icon: 'table', permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/railway/line',
+            name: 'line',
+            component: () => import('@/views/railway/line/LineList'),
+            meta: { title: '路线信息', keepAlive: false, permission: [ 'dashboard' ] }
+          }
+        ]
+      },
+
       // forms
       {
         path: '/form',
