@@ -216,6 +216,7 @@ export default {
       return statusMap[type].text
     },
     statusTypeFilter (type) {
+      console.log('statusTypeFilter: ' + type)
       return statusMap[type].status
     }
   },

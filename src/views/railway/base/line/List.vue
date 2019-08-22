@@ -43,9 +43,9 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" icon="plus" @click="$refs.createModal.add()">新建</a-button>
+      <a-button type="primary" icon="plus" @click="handleEdit(0)">新建</a-button>
       <a-button type="dashed" @click="tableOption">{{ optionAlertShow && '关闭' || '开启' }}多选</a-button>
-      <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
+      <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
@@ -73,10 +73,26 @@
 
       <span slot="action" slot-scope="text, record">
         <template>
-          <a @click="handleEdit(record)">更新</a>
+          <a @click="handleEdit(record.id)">编辑</a>
           <a-divider type="vertical" />
-          <a @click="handleSub(record)">删除</a>
+
         </template>
+        <a-dropdown>
+          <a class="ant-dropdown-link">
+            更多 <a-icon type="down" />
+          </a>
+          <a-menu slot="overlay">
+            <a-menu-item>
+              <a href="javascript:;">详情</a>
+            </a-menu-item>
+            <a-menu-item>
+              <a href="javascript:;">禁用</a>
+            </a-menu-item>
+            <a-menu-item>
+              <a href="javascript:;">删除</a>
+            </a-menu-item>
+          </a-menu>
+        </a-dropdown>
       </span>
     </s-table>
   </a-card>
@@ -84,14 +100,13 @@
 
 <script>
 import moment from 'moment'
-import { STable, Ellipsis } from '@/components'
+import { STable } from '@/components'
 import { page } from '@/api/railway/line'
 
 export default {
   name: 'LineList',
   components: {
-    STable,
-    Ellipsis
+    STable
   },
   data () {
     return {
@@ -146,7 +161,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        console.log('loadData.parameter', parameter)
+        console.log(parameter)
         return page(parameter, this.queryParam)
           .then(res => {
             return res.data
@@ -180,13 +195,7 @@ export default {
           alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
           rowSelection: {
             selectedRowKeys: this.selectedRowKeys,
-            onChange: this.onSelectChange,
-            getCheckboxProps: record => ({
-              props: {
-                disabled: record.no === 'No 2', // Column configuration not to be checked
-                name: record.no
-              }
-            })
+            onChange: this.onSelectChange
           }
         }
         this.optionAlertShow = true
@@ -199,15 +208,14 @@ export default {
       }
     },
 
-    handleEdit (record) {
-      console.log('点击了修改: ' + record.id)
-      this.$refs.modal.edit(record)
+    handleEdit (id) {
+      this.$router.push({ name: 'LineEdit', params: { id: id } })
     },
     handleSub (record) {
       console.log('点击了删除: ' + record)
     },
     handleOk () {
-      this.$refs.table.refresh()
+
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

@@ -46,13 +46,57 @@ export const asyncRouterMap = [
         name: 'railway',
         redirect: '/railway/base',
         component: PageView,
-        meta: { title: '基础档案', icon: 'table', permission: [ 'dashboard' ] },
+        meta: { title: '基础档案', icon: 'table' },
         children: [
+          // 路线
           {
-            path: '/railway/line',
-            name: 'line',
-            component: () => import('@/views/railway/line/LineList'),
-            meta: { title: '路线信息', keepAlive: false, permission: [ 'dashboard' ] }
+            path: '/railway/base/line',
+            name: 'LineWrapper',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/railway/base/LineList'),
+            meta: { title: '路线', keepAlive: false },
+            redirect: {
+              name: 'LineList'
+            },
+            children: [
+              {
+                path: '/railway/base/line/list',
+                name: 'LineList',
+                component: () => import('@/views/railway/base/line/List'),
+                meta: { title: '路线列表', hidden: true, keepAlive: true }
+              },
+              {
+                path: '/railway/base/line/edit/:id',
+                name: 'LineEdit',
+                component: () => import('@/views/railway/base/line/Edit'),
+                meta: { title: '路线编辑', hidden: true, keepAlive: true }
+              }
+            ]
+          },
+          // 车站
+          {
+            path: '/railway/base/station',
+            name: 'StationWrapper',
+            hideChildrenInMenu: true,
+            component: () => import('@/views/railway/base/StationList'),
+            meta: { title: '车站', keepAlive: false },
+            redirect: {
+              name: 'StationList'
+            },
+            children: [
+              {
+                path: '/railway/base/station/list',
+                name: 'StationList',
+                component: () => import('@/views/railway/base/station/List'),
+                meta: { title: '车站列表', hidden: true, keepAlive: true }
+              },
+              {
+                path: '/railway/base/station/edit/:id',
+                name: 'StationEdit',
+                component: () => import('@/views/railway/base/station/Edit'),
+                meta: { title: '车站编辑', hidden: true, keepAlive: true }
+              }
+            ]
           }
         ]
       },
