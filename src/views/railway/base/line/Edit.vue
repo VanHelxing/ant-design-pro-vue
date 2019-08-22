@@ -119,6 +119,9 @@ export default {
           this.params.remark = values.remark
 
           save(this.params)
+            .then(res => {
+              this.openNotificationWithIcon('success')
+            })
         }
       })
     },
@@ -142,6 +145,13 @@ export default {
       } else {
         this.params.id = ''
       }
+    },
+    openNotificationWithIcon (type) {
+      this.$notification[type]({
+        message: '成功消息',
+        description: '保存成功.',
+        icon: <a-icon type="smile" style="color: #108ee9" />
+      })
     }
   }
 }

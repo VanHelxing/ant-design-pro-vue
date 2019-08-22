@@ -7,8 +7,8 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 // 创建 axios 实例
 const service = axios.create({
-  // baseURL: 'http://localhost:8086/rfdp-server', // api base_url
-  baseURL: 'http://172.20.186.99:8087/rfdp-server', // api base_url
+  baseURL: 'http://localhost:8087/rfdp-server', // api base_url
+  // baseURL: 'http://172.20.186.99:8087/rfdp-server', // api base_url
   timeout: 6000 // 请求超时时间
 })
 

@@ -45,11 +45,11 @@
     <div class="table-operator">
       <a-button type="primary" icon="plus" @click="handleEdit(0)">新建</a-button>
       <a-button type="dashed" @click="tableOption">{{ optionAlertShow && '关闭' || '开启' }}多选</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+      <a-dropdown v-if="selectedRowKeys.length > 0 && optionAlertShow">
         <a-menu slot="overlay">
-          <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" @click="handleSubs()"><a-icon type="delete"/>删除</a-menu-item>
           <!-- lock | unlock -->
-          <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
+          <!-- <a-menu-item key="2"><a-icon type="lock" />禁用</a-menu-item> -->
         </a-menu>
         <a-button style="margin-left: 8px">
           批量操作 <a-icon type="down" />
@@ -75,7 +75,15 @@
         <template>
           <a @click="handleEdit(record.id)">编辑</a>
           <a-divider type="vertical" />
-
+        </template>
+        <template>
+          <a-popconfirm
+            v-if="columns.length"
+            title="确认删除?"
+            @confirm="() => handleSub(record.id)">
+            <a href="javascript:;">删除</a>
+          </a-popconfirm>
+          <a-divider type="vertical" />
         </template>
         <a-dropdown>
           <a class="ant-dropdown-link">
@@ -84,12 +92,6 @@
           <a-menu slot="overlay">
             <a-menu-item>
               <a href="javascript:;">详情</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a href="javascript:;">禁用</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a href="javascript:;">删除</a>
             </a-menu-item>
           </a-menu>
         </a-dropdown>
@@ -101,7 +103,7 @@
 <script>
 import moment from 'moment'
 import { STable } from '@/components'
-import { page } from '@/api/railway/line'
+import { page, deleteByIds } from '@/api/railway/line'
 
 export default {
   name: 'LineList',
@@ -125,12 +127,12 @@ export default {
         {
           title: '铁路局编号',
           dataIndex: 'railwayBureauId',
-          sorter: true
+          sorter: false
         },
         {
           title: '铁路局名称',
           dataIndex: 'railwayBureauName',
-          sorter: true
+          sorter: false
         },
         {
           title: '线路编号',
@@ -143,11 +145,6 @@ export default {
           sorter: true
         },
         {
-          title: '备注',
-          dataIndex: 'remark',
-          sorter: false
-        },
-        {
           title: '更新时间',
           dataIndex: 'updateDate',
           sorter: true
@@ -155,7 +152,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '150px',
+          width: '190px',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -211,8 +208,19 @@ export default {
     handleEdit (id) {
       this.$router.push({ name: 'LineEdit', params: { id: id } })
     },
-    handleSub (record) {
-      console.log('点击了删除: ' + record)
+    handleSub (id) {
+      deleteByIds(Array.of(id))
+        .then(res => {
+          this.$refs.table.localDataSource = this.$refs.table.localDataSource.filter(column => column.id !== id)
+          this.openNotificationWithIcon('success', '删除')
+        })
+    },
+    handleSubs () {
+      deleteByIds(this.selectedRowKeys)
+        .then(res => {
+          this.$refs.table.localDataSource = this.$refs.table.localDataSource.filter(column => !this.selectedRowKeys.includes(column.id))
+          this.openNotificationWithIcon('success', '批量删除')
+        })
     },
     handleOk () {
 
@@ -228,6 +236,13 @@ export default {
       this.queryParam = {
         date: moment(new Date())
       }
+    },
+    openNotificationWithIcon (type, operator) {
+      this.$notification[type]({
+        message: '成功消息',
+        description: operator + '成功.',
+        icon: <a-icon type="smile" style="color: #108ee9" />
+      })
     }
   }
 }

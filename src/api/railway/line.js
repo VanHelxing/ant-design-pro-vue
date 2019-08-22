@@ -24,7 +24,7 @@ export function deleteByIds (parameter) {
   return axios({
     url: api.deleteByIds,
     method: 'delete',
-    params: parameter
+    data: parameter
   })
 }
 
